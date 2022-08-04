@@ -20,8 +20,7 @@ pub mod pallet {
 	type BalanceOf<T> =
 		<<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
-	#[derive(Encode, Decode, Debug, Clone, PartialEq, TypeInfo)]
-	#[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
+    #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 	pub enum Gender {
 		Male,
 		Female,
@@ -33,7 +32,9 @@ pub mod pallet {
 		}
 	}
 
-	#[derive(Clone, Encode, Decode, PartialEq, TypeInfo)]
+    #[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+	#[scale_info(skip_type_params(T))]
+	#[codec(mel_bound())] 
 	pub struct Kitty<T: Config> {
 		pub dna: [u8; 16],
 		pub price: Option<BalanceOf<T>>,
@@ -62,7 +63,7 @@ pub mod pallet {
 		type KittyRandomness: Randomness<Self::Hash, Self::BlockNumber>;
 
 		#[pallet::constant]
-		type MaxKittyOwned: Get<u32>;
+		type MaxKittiesOwned: Get<u32>;
 	}
 
 	// Errors.
@@ -93,7 +94,7 @@ pub mod pallet {
 		_,
 		Twox64Concat,
 		T::AccountId,
-		BoundedVec<T::Hash, T::MaxKittyOwned>,
+		BoundedVec<T::Hash, T::MaxKittiesOwned>,
 		ValueQuery,
 	>;
 
